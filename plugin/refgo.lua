@@ -1,24 +1,28 @@
 if vim.g.loaded_refgo == 1 then
-  return
+	return
 end
 vim.g.loaded_refgo = 1
 
 local refgo = require("refgo")
 
 vim.api.nvim_create_user_command("RefCopy", function()
-  refgo.copy()
+	refgo.copy()
+end, {})
+
+vim.api.nvim_create_user_command("RCL", function()
+	refgo.open_below_cursor()
 end, {})
 
 vim.api.nvim_create_user_command("RefCopyContext", function(opts)
-  local n = opts.args
-  refgo.copy_with_context(n)
+	local n = opts.args
+	refgo.copy_with_context(n)
 end, {
-  nargs = "?",
+	nargs = "?",
 })
 
 vim.api.nvim_create_user_command("RefGo", function(opts)
-  local ref = opts.args
-  refgo.open(ref)
+	local ref = opts.args
+	refgo.open(ref)
 end, {
-  nargs = "?",
+	nargs = "?",
 })

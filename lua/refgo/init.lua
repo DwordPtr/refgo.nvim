@@ -57,4 +57,53 @@ M.open = function(reference)
   vim.cmd(":" .. line)
 end
 
+M.open_below_cursor = function()
+  local token_below_cursor = get_current_token()
+  M.open(token_below_cursor)
+end
+
+local function get_current_token()
+  -- 1. Get the current cursor position (row, col)
+  local row, col = unpack(vim.fn.getpos('.')[1:2])  -- Note: getpos() returns a list
+
+  -- 2. Get the current line
+  local line = vim.fn.getline(row)
+
+  -- 3. Find the token under the cursor
+  local start_col, end_col = find_token_boundaries(line, col)
+
+  if start_col and end_col then
+    return string.sub(line, start_col, end_col)
+  else
+    return nil -- No token found under the cursor
+  end
+end
+
+local function find_token_boundaries(line, col)
+  -- This function defines what a "token" is.  You'll likely need to customize this.
+  -- Here's a simple example that considers tokens to be separated by whitespace.
+
+  -- Find the start of the token
+  local start_col = col
+  while start_col > 1 and string.sub(line, start_col - 1, start_col - 1):match("%s") == "" do
+    start_col = start_col - 1
+  end
+
+  -- Find the end of the token
+  local end_col = col
+  while end_col <= string.len(line) and string.sub(line, end_col, end_col):match("%s") == "" do
+    end_col = end_col + 1
+  end
+
+  -- Adjust end_col to be inclusive
+  end_col = end_col -1
+
+  -- Check if the cursor is actually within the token boundaries
+  if col >= start_col and col <= end_col then
+    return start_col, end_col
+  else
+    return nil, nil
+  end
+end
+
 return M
